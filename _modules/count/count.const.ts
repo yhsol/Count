@@ -5,6 +5,11 @@ export enum RunStatus {
   Timeout = "Timeout",
 }
 
+export enum TimerView {
+  Text = "Text",
+  Color = "Color,",
+}
+
 export const defaultTimerValue = {
   h: 0,
   m: 0,

@@ -14,4 +14,8 @@ export type CountDown = {
 export type RunStatusFns = {
   runStatusFn: (runStatus: RunStatus) => void;
   timerFn: (timerValue: Timer) => void;
+  timerForChartFn: (timerValue: Timer) => void;
+  timerValue: Timer;
 };
+
+export type ChartData = Record<string, string | number>[];

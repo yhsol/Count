@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
 import { defaultTimerValue, RunStatus } from "./count.const";
-import { CountDown, RunStatusFns } from "./count.types";
+import { CountDown, RunStatusFns, Timer } from "./count.types";
 
 export function useTimer(callback: () => void, delay: number | null) {
-  console.log("useTimer");
   const savedCallback = useRef<any>(null);
 
   useEffect(() => {
@@ -21,7 +20,7 @@ export function useTimer(callback: () => void, delay: number | null) {
   }, [delay]);
 }
 
-export const countdown = ({ timerFn, timerValue }: CountDown) => {
+export function countdown({ timerFn, timerValue }: CountDown) {
   timerFn({
     ...timerValue,
     s: timerValue.s - 1,
@@ -42,23 +41,24 @@ export const countdown = ({ timerFn, timerValue }: CountDown) => {
       m: 59,
     });
   }
-};
+}
 
 export const timerStatus =
-  ({ runStatusFn, timerFn }: RunStatusFns) =>
-  (runStatus: RunStatus) =>
-  () => {
-    switch (runStatus) {
-      case RunStatus.Run:
-      case RunStatus.Stop:
-      case RunStatus.Timeout:
-        runStatusFn(runStatus);
-        break;
-      case RunStatus.Reset:
-        runStatusFn(RunStatus.Reset);
-        timerFn(defaultTimerValue);
-        break;
-      default:
-        break;
+  ({ runStatusFn, timerFn, timerForChartFn, timerValue }: RunStatusFns) =>
+  (runStatus: RunStatus) => {
+    if (runStatus === RunStatus.Run) {
+      if (timerValue.h === 0 && timerValue.m === 0 && timerValue.s === 0) {
+        return;
+      }
+      timerForChartFn(timerValue);
     }
+
+    if (runStatus === RunStatus.Reset) {
+      timerFn(defaultTimerValue);
+    }
+    runStatusFn(runStatus);
   };
+
+export function makeTotalCount(timer: Timer) {
+  return timer.h * 60 * 60 + timer.m * 60 + timer.s;
+}
